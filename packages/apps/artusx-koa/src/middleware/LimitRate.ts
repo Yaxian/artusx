@@ -21,6 +21,10 @@ export default class LimitRateMiddleware {
   }
 
   async use(ctx: ArtusxContext, next: ArtusxNext): Promise<void> {
+    if (process.env.BENCH_FIND_MY_WAY || process.env.BENCH_KOA_ROUTER) {
+      await next();
+      return;
+    }
     try {
       const rateLimiterRes = await this.rateLimiter.consume(ctx.ip);
       const reset = dayjs().add(rateLimiterRes.msBeforeNext, 'milliseconds');
